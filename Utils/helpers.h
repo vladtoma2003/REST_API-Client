@@ -25,6 +25,9 @@ char *receive_from_server(int sockfd);
 // extracts and returns a JSON from a server response
 char *basic_extract_json_response(char *str);
 
+// verifies if the given string is a number
+int is_number(std::string str);
+
 // Request functions:
 // computes and returns a POST request string (cookies can be NULL if not needed)
 char *compute_post_request(char *host, char *url, char* content_type, std::string body_data,

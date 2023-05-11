@@ -29,14 +29,14 @@ int main() {
 
     while(1) {
         std::string command;
-        std::cin >> command;
-        std::cin.ignore();
+        std::getline(std::cin, command);
         
         if(command == "register") { // merge cu == pt ca e string
             // POST REEQUEST
             std::string username;
             std::cout << "username:";
             std::getline(std::cin,  username);
+
             std::string password;
             std::cout << "password:";
             std::getline(std::cin,  password);
@@ -45,6 +45,13 @@ int main() {
                 {"username", username},
                 {"password", password}
             };
+
+            // verific daca username ul sau parola contin spatiu
+            if(std::string(username).find(' ') != std::string::npos || std::string(password).find(' ') != std::string::npos) {
+                std::cout << "Error: Bad username or password input!" << std::endl;
+                continue;
+            }
+
             // generez mesajul de register
             message = compute_post_request(
                 IP_PORT,
@@ -87,6 +94,12 @@ int main() {
                 {"username", username},
                 {"password", password}
             };
+
+            // verific daca username ul sau parola contin spatiu
+            if(std::string(username).find(' ') != std::string::npos || std::string(password).find(' ') != std::string::npos) {
+                std::cout << "Error: Bad username or password input!" << std::endl;
+                continue;
+            }
 
             // deschid conexiunea cu sv
             sockfd = open_connection(IP, PORT, PF_INET, SOCK_STREAM, 0);
@@ -219,8 +232,18 @@ int main() {
 
             std::string id;
             std::cout << "id:";
-            std::cin >> id;
-            std::cin.ignore();
+            std::getline(std::cin,  id);
+
+            if(!is_number(id)) {
+                std::cout << "Error: Bad id input!" << std::endl;
+                continue;
+            }
+
+            // verific daca id ul este numar (functia returneaza 0 si daca acesta contine spatiu)
+            if(!is_number(id)) {
+                std::cout << "Error: Bad id input!" << std::endl;
+                continue;
+            }
 
             std::string api = "/api/v1/tema/library/books/" + id;
 
@@ -282,9 +305,13 @@ int main() {
             std::getline(std::cin, genre);
 
             std::string page_count;
-            std::cout << "page_count:";
-            std::cin >> page_count;
-            std::cin.ignore();
+            std::cout << "page count:";
+            std::getline(std::cin, page_count);
+
+            if(!is_number(page_count)) {
+                std::cout << "Error: Bad page count input!" << std::endl;
+                continue;
+            }
 
             std::string publisher;
             std::cout << "publisher:";
@@ -338,8 +365,13 @@ int main() {
 
             std::string id;
             std::cout << "id:";
-            std::cin >> id;
-            std::cin.ignore();
+            std::getline(std::cin,  id);
+
+            // verific daca id ul este numar (functia returneaza 0 si daca acesta contine spatiu)
+            if(!is_number(id)) {
+                std::cout << "Error: Bad id input!" << std::endl;
+                continue;
+            }
 
             std::string api = "/api/v1/tema/library/books/" + id;
 

@@ -134,6 +134,14 @@ char *basic_extract_json_response(char *str)
     return strstr(str, "{\"");
 }
 
+int is_number(std::string s) {
+    for (int i = 0; i < s.length(); i++) {
+        if (isdigit(s[i]) == false) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 // Request functions:
 char *compute_post_request(char *host, char *url, char* content_type, std::string body_data,
