@@ -206,5 +206,38 @@ char *compute_get_request(char *host, char *url, char *query_params,
     }
     // Step 4: add final new line
     compute_message(message, "");
+    free(line);
     return message;
+}
+
+char *compute_delete_request(char *host, char *url, char *query_params, 
+                                  std::string *cookies, int cookies_count)
+{
+  char *message = (char *)calloc(BUFLEN, sizeof(char));
+  char *line = (char *)calloc(LINELEN, sizeof(char));
+
+  // Numele metodei, URL, parametrii de request (daca exista) si protocolul
+  if(query_params) {
+    sprintf(line, "DELETE %s?%s HTTP/1.1", url, query_params);
+  } else {
+    sprintf(line, "DELETE %s HTTP/1.1", url);
+  }  
+
+  compute_message(message, line);
+
+  // adaug hostul
+  sprintf(line, "Host: %s", host);
+  compute_message(message, line);
+
+  // adaug cookies (optional) si/sau alte headere specifice
+  if (cookies != NULL) {
+    for(int i = 0; i < cookies_count; i++) {
+        compute_message(message, cookies[i].c_str());
+    }
+  }
+
+  // Add final new line
+  compute_message(message, "");
+  free(line);
+  return message;
 }

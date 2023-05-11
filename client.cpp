@@ -30,27 +30,21 @@ int main() {
     while(1) {
         std::string command;
         std::cin >> command;
+        std::cin.ignore();
         
         if(command == "register") { // merge cu == pt ca e string
             // POST REEQUEST
             std::string username;
             std::cout << "username:";
-            // std::cin.ignore(); // citeste un caracter si il ignora
-            // std::getline(std::cin,  username); // citeste toata linia
-            std::cin >> username;
-
+            std::getline(std::cin,  username);
             std::string password;
             std::cout << "password:";
-            // std::cin.ignore();
-            // std::getline(std::cin,  password);
-            std::cin >> password;
+            std::getline(std::cin,  password);
 
             nlohmann::json user = {
                 {"username", username},
                 {"password", password}
             };
-            std::cout << user.dump() << std::endl;
-
             // generez mesajul de register
             message = compute_post_request(
                 IP_PORT,
@@ -83,15 +77,11 @@ int main() {
             // POST REQUEST
             std::string username;
             std::cout << "username:";
-            // std::cin.ignore();
-            // std::getline(std::cin,  username);
-            std::cin >> username;
+            std::getline(std::cin,  username);
 
             std::string password;
             std::cout << "password:";
-            // std::cin.ignore();
-            // std::getline(std::cin,  password);
-            std::cin >> password;
+            std::getline(std::cin,  password);
 
             nlohmann::json user = {
                 {"username", username},
@@ -134,7 +124,7 @@ int main() {
             // inchid conexiunea cu serverul
             close_connection(sockfd);
 
-        } else if(command == "get_access") {
+        } else if(command == "enter_library") {
             // GET REQUEST
             if(logged_in == 0) {
                 std::cout << "Error: You are not logged in!" << std::endl;
@@ -213,11 +203,61 @@ int main() {
 
                 std::string books = std::string(response).substr(start, end - start + 1);
                 nlohmann::json carti = nlohmann::json::parse(books);
-                std::cout<< carti << std::endl;
                 
+                for(nlohmann::json carte : carti) {
+                    std::cout << "id: " << carte["id"] << ", titlu: " << carte["title"] << std::endl;
+                }
+
             }
 
         } else if(command == "get_book") {
+            // GET REQUEST
+            if(!access) {
+                std::cout << "Error: Authorization header is missing!" << std::endl;
+                continue;
+            }
+
+            std::string id;
+            std::cout << "id:";
+            std::cin >> id;
+            std::cin.ignore();
+
+            std::string api = "/api/v1/tema/library/books/" + id;
+
+            // deschid conexiunea cu sv
+            sockfd = open_connection(IP, PORT, PF_INET, SOCK_STREAM, 0);
+
+            std::string tokens[10];
+            tokens[0] = tokenJWT;
+
+            // generez mesajul de get_book
+            message = compute_get_request(
+                IP_PORT,
+                (char *)api.c_str(),
+                NULL,
+                tokens,
+                1
+            );
+
+            send_to_server(sockfd, message);
+
+            response = receive_from_server(sockfd);
+
+            if(strstr(response, "error")) {
+                std::cout << "Error: ID doesn't exist!" << std::endl;
+            } else {
+                unsigned int start = std::string(response).find("{"); // retunreaza o lista de un json
+                unsigned int end = std::string(response).find("}", start);
+
+                std::string book = std::string(response).substr(start, end - start + 1); // un string json
+                nlohmann::json carte = nlohmann::json::parse(book); // transform stringul in json
+
+                std::cout << "titlu: " << carte["title"] << std::endl
+                 << "autor: " << carte["author"] << std::endl
+                 << "genre: " << carte["genre"] << std::endl
+                 << "page count: " << carte["page_count"] << std::endl
+                 << "publisher: " << carte["publisher"] << std::endl;
+            }
 
         } else if(command == "add_book") {
             // POST REQUEST
@@ -228,26 +268,27 @@ int main() {
 
             std::string title;
             std::cout << "title:";
-            std::cin.ignore();
+            // std::cin.ignore();
             std::getline(std::cin, title);
 
             std::string author;
             std::cout << "author:";
-            std::cin.ignore();
+            // std::cin.ignore();
             std::getline(std::cin, author);
 
             std::string genre;
             std::cout << "genre:";
-            std::cin.ignore();
+            // std::cin.ignore();
             std::getline(std::cin, genre);
 
             std::string page_count;
             std::cout << "page_count:";
             std::cin >> page_count;
+            std::cin.ignore();
 
             std::string publisher;
             std::cout << "publisher:";
-            std::cin.ignore();
+            // std::cin.ignore();   
             std::getline(std::cin, publisher);
 
             nlohmann::json book = {
@@ -288,6 +329,77 @@ int main() {
             // inchid conexiunea cu sv
             close_connection(sockfd);
 
+        } else if (command == "delete_book") {
+            // DELETE REQUEST
+            if(!access) {
+                std::cout << "Error: Authorization header is missing!" << std::endl;
+                continue;
+            }
+
+            std::string id;
+            std::cout << "id:";
+            std::cin >> id;
+            std::cin.ignore();
+
+            std::string api = "/api/v1/tema/library/books/" + id;
+
+            // deschid conexiunea cu sv
+            sockfd = open_connection(IP, PORT, PF_INET, SOCK_STREAM, 0);
+
+            std::string tokens[10];
+            tokens[0] = tokenJWT;
+
+            message = compute_delete_request(
+                IP_PORT,
+                (char *)api.c_str(),
+                NULL,
+                tokens,
+                1
+            );
+
+            send_to_server(sockfd, message);
+
+            response = receive_from_server(sockfd);
+
+            if(strstr(response, "error")) {
+                std::cout << "Error: ID doesn't exist!" << std::endl;
+            } else {
+                std::cout << "Book deleted!" << std::endl;
+            }
+
+        } else if(command == "logout") {
+            if(!logged_in) {
+                std::cout << "Error: You are not logged in!" << std::endl;
+                continue;
+            }
+
+            std::string cookies[10];
+            cookies[0] = userCookie;
+
+            // deschid conexiunea cu sv
+            sockfd = open_connection(IP, PORT, PF_INET, SOCK_STREAM, 0);
+
+            message = compute_get_request(
+                IP_PORT,
+                (char *)"/api/v1/tema/auth/logout",
+                NULL,
+                cookies,
+                1
+            );
+
+            send_to_server(sockfd, message);
+
+            response = receive_from_server(sockfd);
+
+            if(strstr(response, "error")) {
+                std::cout << "Error: You are not logged in!" << std::endl;
+            } else {
+                std::cout << "Logout successful!" << std::endl;
+                logged_in = 0;
+                access = 0;
+                tokenJWT = "";
+                userCookie = "";
+            }
 
         } else if (command == "exit") {
             break; // vreau sa ies
