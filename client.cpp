@@ -21,10 +21,8 @@ int main() {
     char* response;
     int sockfd;
 
-    int logged_in = 0; // ce se intampla daca sunt logat si dau register?
     std::string userCookie = "";
 
-    int access = 0;
     std::string tokenJWT = "";
 
     while(1) {
@@ -132,12 +130,13 @@ int main() {
                 std::cout << "Error: Credentials are not good!" << std::endl;
             } else {
                 std::cout << "Login succesful!" << std::endl;
-                logged_in = 1;
 
                 unsigned int start = std::string(response).find("Cookie: ");
                 unsigned int end = std::string(response).find(";", start);
 
                 userCookie = std::string(response).substr(start, end - start);
+                // il golesc in caz ca un user se logheaza, da access_library si apoi se logheaza iar cu un alt cont
+                tokenJWT = "";
             }
 
             // inchid conexiunea cu serverul
@@ -178,7 +177,6 @@ int main() {
                 std::cout << "Error: You are not logged in!" << std::endl;
             } else {
                 std::cout << "Access granted!" << std::endl;
-                access = 1;
 
                 unsigned int start = std::string(response).find("token"); // {"token":"..."}
                 unsigned int end = std::string(response).find("}", start);
@@ -480,8 +478,6 @@ int main() {
                 std::cout << "Error: You are not logged in!" << std::endl;
             } else {
                 std::cout << "Logout successful!" << std::endl;
-                logged_in = 0;
-                access = 0;
                 tokenJWT = "";
                 userCookie = "";
             }

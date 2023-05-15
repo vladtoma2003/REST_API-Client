@@ -170,11 +170,12 @@ char *compute_post_request(char *host, char *url, char* content_type, std::strin
 
     // Step 4 (optional): add cookies
     if (cookies != NULL) {
-      // compute_message(message, "Cookie: ");
+       compute_message(message, "Cookie: ");
       for(int i = 0; i < cookies_count; i++) {
           compute_message(message, cookies[i].c_str());
       }
     }
+
     // Step 5: add new line at end of header
     compute_message(message, "");
 
@@ -212,6 +213,7 @@ char *compute_get_request(char *host, char *url, char *query_params,
             compute_message(message, cookies[i].c_str());
         }
     }
+
     // Step 4: add final new line
     compute_message(message, "");
     free(line);
