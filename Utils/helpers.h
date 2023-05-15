@@ -70,8 +70,8 @@ int is_number(std::string str);
  * @param cookies_count - the number of cookies
  * Computes and returns a POST request string (cookies can be NULL if not needed)
  */
-char *compute_post_request(char *host, char *url, char* content_type, std::string body_data,
-							int body_data_fields_count, std::string *cookies, int cookies_count);
+char *compute_post_request(char *host, char *url, char *content_type, std::string body_data,
+                           int body_data_fields_count, std::string *cookies, int cookies_count);
 
 /*
  * @param host - the host to be used
@@ -81,7 +81,8 @@ char *compute_post_request(char *host, char *url, char* content_type, std::strin
  * @param cookies_count - the number of cookies
  * Computes and returns a GET request string (query_params and cookies can be set to NULL if not needed).
  */
-char *compute_get_request(char *host, char *url, char *query_params, std::string *cookies, int cookies_count);
+char *compute_get_request(char *host, char *url, char *query_params, std::string *cookies,
+                          int cookies_count);
 
 /*
  * @param host - the host to be used
@@ -91,7 +92,8 @@ char *compute_get_request(char *host, char *url, char *query_params, std::string
  * @param cookies_count - the number of cookies
  * Computes and returns a DELETE request string (query_params and cookies can be NULL if not needed).
  */
-char *compute_delete_request(char *host, char *url, char *query_params, std::string *cookies, int cookies_count);
+char *compute_delete_request(char *host, char *url, char *query_params, std::string *cookies,
+                             int cookies_count);
 
 
 #endif
