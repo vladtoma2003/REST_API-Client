@@ -289,7 +289,6 @@ int main() {
             send_to_server(sockfd, message);
 
             response = receive_from_server(sockfd);
-            std::cout << response << std::endl;
 
             if(strstr(response, "error")) {
                 std::cout << "Error: ID doesn't exist!" << std::endl;
