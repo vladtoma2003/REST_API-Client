@@ -22,15 +22,17 @@ int main() {
     int sockfd;
 
     int logged_in = 0; // ce se intampla daca sunt logat si dau register?
-    std::string userCookie;
+    std::string userCookie = "";
 
     int access = 0;
-    std::string tokenJWT;
+    std::string tokenJWT = "";
 
     while(1) {
         std::string command;
         std::getline(std::cin, command);
         
+//===================================REGISTER======================================================
+    
         if(command == "register") { // merge cu == pt ca e string
             // POST REEQUEST
             std::string username;
@@ -80,7 +82,11 @@ int main() {
             close_connection(sockfd);
 
 
-        }else if (command == "login") {
+        }
+        
+//===================================LOGIN======================================================
+
+        else if (command == "login") {
             // POST REQUEST
             std::string username;
             std::cout << "username:";
@@ -137,9 +143,13 @@ int main() {
             // inchid conexiunea cu serverul
             close_connection(sockfd);
 
-        } else if(command == "enter_library") {
+        }
+        
+//===================================ENTER_LIBRARY======================================================
+        
+         else if(command == "enter_library") {
             // GET REQUEST
-            if(logged_in == 0) {
+            if(userCookie == "") {
                 std::cout << "Error: You are not logged in!" << std::endl;
                 continue;
             }
@@ -181,10 +191,19 @@ int main() {
             // inchid conexiunea cu sv
             close_connection(sockfd);
 
-        } else if(command == "get_books") {
+        }
+        
+//===================================GET_BOOKS======================================================
+        
+         else if(command == "get_books") {
             // GET REQUEST
 
-            if(!access) { // verific daca am access la carti
+            if(userCookie == "") {
+                std::cout << "Error: You are not logged in!" << std::endl;
+                continue;
+            }
+
+            if(tokenJWT == "") {
                 std::cout << "Error: Authorization header is missing!" << std::endl;
                 continue;
             }
@@ -208,6 +227,8 @@ int main() {
 
             response = receive_from_server(sockfd);
 
+            close_connection(sockfd);
+
             if(strstr(response, "error")) {
                 std::cout << "Error: Authorization header is missing!" << std::endl;
             } else {
@@ -223,9 +244,19 @@ int main() {
 
             }
 
-        } else if(command == "get_book") {
+        }
+        
+//===================================GET_BOOK======================================================
+        
+         else if(command == "get_book") {
             // GET REQUEST
-            if(!access) {
+
+            if(userCookie == "") {
+                std::cout << "Error: You are not logged in!" << std::endl;
+                continue;
+            }
+
+            if(tokenJWT == "") {
                 std::cout << "Error: Authorization header is missing!" << std::endl;
                 continue;
             }
@@ -234,12 +265,7 @@ int main() {
             std::cout << "id:";
             std::getline(std::cin,  id);
 
-            if(!is_number(id)) {
-                std::cout << "Error: Bad id input!" << std::endl;
-                continue;
-            }
-
-            // verific daca id ul este numar (functia returneaza 0 si daca acesta contine spatiu)
+            // verific daca id ul este numar
             if(!is_number(id)) {
                 std::cout << "Error: Bad id input!" << std::endl;
                 continue;
@@ -265,6 +291,7 @@ int main() {
             send_to_server(sockfd, message);
 
             response = receive_from_server(sockfd);
+            std::cout << response << std::endl;
 
             if(strstr(response, "error")) {
                 std::cout << "Error: ID doesn't exist!" << std::endl;
@@ -282,9 +309,19 @@ int main() {
                  << "publisher: " << carte["publisher"] << std::endl;
             }
 
-        } else if(command == "add_book") {
+        }
+        
+//===================================ADD_BOOK======================================================
+        
+         else if(command == "add_book") {
             // POST REQUEST
-            if(!access) {
+
+            if(userCookie == "") {
+                std::cout << "Error: You are not logged in!" << std::endl;
+                continue;
+            }
+
+            if(tokenJWT == "") {
                 std::cout << "Error: Authorization header is missing!" << std::endl;
                 continue;
             }
@@ -356,9 +393,19 @@ int main() {
             // inchid conexiunea cu sv
             close_connection(sockfd);
 
-        } else if (command == "delete_book") {
+        }
+        
+//===================================DELETE_BOOK===================================================
+        
+        else if (command == "delete_book") {
             // DELETE REQUEST
-            if(!access) {
+
+            if(userCookie == "") {
+                std::cout << "Error: You are not logged in!" << std::endl;
+                continue;
+            }
+
+            if(tokenJWT == "") {
                 std::cout << "Error: Authorization header is missing!" << std::endl;
                 continue;
             }
@@ -393,14 +440,20 @@ int main() {
 
             response = receive_from_server(sockfd);
 
+            close_connection(sockfd);
+
             if(strstr(response, "error")) {
                 std::cout << "Error: ID doesn't exist!" << std::endl;
             } else {
                 std::cout << "Book deleted!" << std::endl;
             }
 
-        } else if(command == "logout") {
-            if(!logged_in) {
+        }
+        
+//===================================LOGOUT========================================================
+        
+        else if(command == "logout") {
+            if(userCookie == "") {
                 std::cout << "Error: You are not logged in!" << std::endl;
                 continue;
             }
@@ -433,8 +486,31 @@ int main() {
                 userCookie = "";
             }
 
-        } else if (command == "exit") {
+            close_connection(sockfd);
+
+        } 
+        
+//===================================EXIT==========================================================
+
+        else if (command == "exit") {
             break; // vreau sa ies
+        }
+        
+//===================================INVALID COMMAND===============================================
+        
+        else {
+            std::cout << "Error: Invalid command!" << std::endl;
+            std::cout << "The available commands are:" << std::endl;
+            std::cout << "register" << std::endl;
+            std::cout << "login" << std::endl;
+            std::cout << "enter_library" << std::endl;
+            std::cout << "get_books" << std::endl;
+            std::cout << "get_book" << std::endl;
+            std::cout << "add_book" << std::endl;
+            std::cout << "delete_book" << std::endl;
+            std::cout << "logout" << std::endl;
+            std::cout << "exit" << std::endl;
+
         }
     }
 
