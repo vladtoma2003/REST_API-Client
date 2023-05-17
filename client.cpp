@@ -457,6 +457,7 @@ int main() {
 //===================================LOGOUT========================================================
 
         else if (command == "logout") {
+            // GET REQUEST
             if (userCookie == "") {
                 std::cout << "Error: You are not logged in!" << std::endl;
                 continue;
