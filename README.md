@@ -31,7 +31,7 @@ La final inchid conexiunea cu serverul.
 Aceasta comanda este folosita pentru autentificare pe server. Request-ul este de tip *POST REQUEST*.
 Asemanator cu *REGISTER*, se verifica datele de intrare (username-ul si parola), se deschide conexiunea cu serverul, se genereaza mesajul
 care urmeaza sa fie trimis catre server si se preia raspunsul de la server. Diferenta este raspunusl. Raspunsul poate fi din nou o eroare,
-unde se afiseaza un mesaj de eroare sau succes, unde se afiseaza un mesaj de succes si se salveaza **Cookie**-ul primit. Acest cookie este
+unde se afiseaza un mesaj de eroare sau succes, unde se afiseaza un mesaj de succes si se salveaza **Cookie-ul** primit. Acest cookie este
 al utilizatorului si dovedeste faptul ca userul este conectat. De asemenea cu acest cookie server-ul stie cu cine comunica. La final se 
 inchide conexiunea cu server-ul.
 
@@ -54,7 +54,7 @@ cu serverul, se genereaza mesajul si se trimite. Apoi se preia raspunsul si se a
 Aceasta comanda primeste ca parametru in id si intoarce detalii despre cartea cu acel id. Request-ul este de tip *GET REQUEST*.
 La inceput am verificat ca id-ul sa fie numar natural (id-ul se trece la finalul rutei de acces). Apoi am verificat daca userul
  este autentificat si are acces. Am deschis conexiunea cu serverul, am generat mesajul si l-am trimis. Apoi am luat raspunsul 
- si am afisat detaliile din **JSON**-ul primit(in raspuns se afla un **JSON** ce continea toate detaliile cartii cerute).
+ si am afisat detaliile din **JSON-ul** primit(in raspuns se afla un **JSON** ce continea toate detaliile cartii cerute).
 La final am inchis conexiunea cu serverul.
 
 #### 6) ADD_BOOK
@@ -72,9 +72,9 @@ Singura diferenta dintre **get_book** si **delete_book** este tipul de request. 
 
 #### 8) LOGOUT
 
-Aceasta comanda sterge accesul userului curent si apoi sterge **Cookie**-ul salvat. Request-ul este de tip *GET REQUEST*.
+Aceasta comanda sterge accesul userului curent si apoi sterge **Cookie-ul** salvat. Request-ul este de tip *GET REQUEST*.
 In aceasta comanda se deschide conexiunea, se genereaza mesajul si se trimite. Se ia raspunsul apoi se verifica daca este eroare. Daca nu este
-eroare se sterge **tokenJWT** si **Cookie**-ul salvat. La final se inchide conexiunea cu serverul.
+eroare se sterge **tokenJWT** si **Cookie-ul** salvat. La final se inchide conexiunea cu serverul.
 
 #### 9) EXIT
 Aceasta comanda este folosita pentru a inchide clientul. In aceasta comanda se da "break;" din while-ul clientului.
@@ -92,8 +92,22 @@ Majoritatea functiilor folosite sunt luate din *laboratorul 9*. Functiile folosi
 - compute_get_request: Functia a fost luata din laborator si completata. Am urmat pasii comentati pentru a face functia functionala.
 - compute_delete_request: Aceasta functe este facuta de mine pentru comanda *delete_book*. Functia este foarte asemanatoare cu compute_get_request. Aceasta schimba doar tipul de request din interior.
 
-Fisierele *json_fwd.hpp* si *json.hpp* sunt pentru folosirea **JSON**-ului in C++.
+Fisierele *json_fwd.hpp* si *json.hpp* sunt pentru folosirea **JSON-ului** in C++.
 
     Sursa fisiere json:  https://github.com/nlohmann/json
 
 Fisierele din directorul Buffer sunt luate din laborator si folosite la o parte din functiile din laborator folosite in tema.
+
+# Compilarea si rularea:
+
+Compilarea se poate face folosind **Makefile-ul**. Pentru compilare:
+
+    make
+
+De asemenea, rularea se poate face folosind **Makefile-ul**. Rulare:
+
+    make run
+
+Se pot sterge fiiserele create folosind:
+
+    make clean
